@@ -1,0 +1,10 @@
+{"level":"warn","ts":1606117520331,"caller":"logtool/log_test.go:16","msg":"warn log 3","level":"{\"a\":\"4\",\"b\":\"5\"}"}
+{"level":"warn","ts":1606117521332,"caller":"logtool/log_test.go:16","msg":"warn log 3","level":"{\"a\":\"4\",\"b\":\"5\"}"}
+{"level":"warn","ts":1606117522334,"caller":"logtool/log_test.go:16","msg":"warn log 3","level":"{\"a\":\"4\",\"b\":\"5\"}"}
+{"level":"warn","ts":1606117523335,"caller":"logtool/log_test.go:16","msg":"warn log 3","level":"{\"a\":\"4\",\"b\":\"5\"}"}
+{"level":"warn","ts":1606117524336,"caller":"logtool/log_test.go:16","msg":"warn log 3","level":"{\"a\":\"4\",\"b\":\"5\"}"}
+{"level":"warn","ts":1606117525336,"caller":"logtool/log_test.go:16","msg":"warn log 3","level":"{\"a\":\"4\",\"b\":\"5\"}"}
+{"level":"warn","ts":1606117526336,"caller":"logtool/log_test.go:16","msg":"warn log 3","level":"{\"a\":\"4\",\"b\":\"5\"}"}
+{"level":"warn","ts":1606117527338,"caller":"logtool/log_test.go:16","msg":"warn log 3","level":"{\"a\":\"4\",\"b\":\"5\"}"}
+{"level":"warn","ts":1606117528339,"caller":"logtool/log_test.go:16","msg":"warn log 3","level":"{\"a\":\"4\",\"b\":\"5\"}"}
+{"level":"warn","ts":1606117529340,"caller":"logtool/log_test.go:16","msg":"warn log 3","level":"{\"a\":\"4\",\"b\":\"5\"}"}
