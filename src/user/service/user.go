@@ -101,6 +101,7 @@ func (u baseServer) GetUserInfoByToken(ctx context.Context, req *pb.GetUserInfoB
 			Code: -2,
 		}, errors.ErrorUserLoginFailed
 	}
+	// redis
 	return &pb.GetUserInfoByTokenResponse{
 		Code: 0,
 		UserInfo: &pb.UserInfo{

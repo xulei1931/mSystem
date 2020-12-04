@@ -65,7 +65,7 @@ func main() {
 		errChan <- http.ListenAndServe(":"+*servicePort, r)
 	}()
 	// 数据库连接初始化。。。。。。
-	dbconfig.InitDB()
+	dbconfig.Init()
 	//grpc server
 	go func() {
 		fmt.Println("grpc Server start at port" + *grpcAddr)
