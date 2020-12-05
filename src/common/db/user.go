@@ -6,6 +6,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"mSystem/src/common/entity"
 	"time"
+	"encoding/json"
 )
 // 通过ok
 func InsertUser(userName string, password string, email string) error {
@@ -42,13 +43,29 @@ func SelectUserByPasswordName(email string, password string) (*entity.User, erro
 	return &user, e
 }
 func SelectUserById(user_id float64,name string) (*entity.User, error) {
-
 	user := entity.User{}
+	user_key := fmt.Sprintf("user_id:",user_id)
+
+	// redis
+	redis_values, err := redisClient.Get(user_key).Result()
+	if err == nil {
+       b := []byte(redis_values)
+       if json.Unmarshal(b,&user) == nil {
+		   fmt.Printf("get from redis value :%v\n", &user)
+          return &user,nil
+	   }
+	}
+
 	sql := "SELECT * FROM user WHERE `user_id` = ? AND `user_name` = ? LIMIT 1"
 	e := db.QueryRow(sql,int64(user_id),name).Scan(&user.UserId,&user.UserName,&user.Password,&user.CreateAt,&user.Email,&user.Phone)
 	if e != nil {
 		fmt.Printf("scan failed, err:%v\n", e)
 		return nil, nil
+	}
+	bytes1, err := json.Marshal(&user)
+	if err == nil {
+		// 返回的是字节数组 []byte
+		redisClient.Set(user_key,string(bytes1),600) // 10分钟
 	}
 	return &user, e
 }
