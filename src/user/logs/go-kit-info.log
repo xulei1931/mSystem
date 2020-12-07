@@ -35,6 +35,4 @@
 {"level":"info","ts":1607077290904,"caller":"logtool/log.go:89","msg":"[NewLogger] success"}
 {"level":"info","ts":1607077608759,"caller":"logtool/log.go:89","msg":"[NewLogger] success"}
 {"level":"info","ts":1607077649460,"caller":"logtool/log.go:89","msg":"[NewLogger] success"}
-{"level":"info","ts":1607304903771,"caller":"logtool/log.go:89","msg":"[NewLogger] success"}
-{"level":"info","ts":1607305029073,"caller":"logtool/log.go:89","msg":"[NewLogger] success"}
-{"level":"info","ts":1607306265589,"caller":"logtool/log.go:89","msg":"[NewLogger] success"}
+
