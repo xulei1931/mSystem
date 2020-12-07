@@ -3,6 +3,8 @@ package endpoint
 import (
 	"context"
 	"github.com/go-kit/kit/endpoint"
+	kitzipkin "github.com/go-kit/kit/tracing/zipkin"
+	"github.com/openzipkin/zipkin-go"
 	"go.uber.org/zap"
 	"golang.org/x/time/rate"
 	pb "mSystem/src/common/pb"
@@ -37,17 +39,21 @@ type Endpoints struct {
 	GetUserInfoByToken endpoint.Endpoint
 }
 
-func NewEndpoint(s service.UserService, log *zap.Logger, limit *rate.Limiter) Endpoints {
+func NewEndpoint(s service.UserService, log *zap.Logger, limit *rate.Limiter,tracer *zipkin.Tracer) Endpoints {
 	var RegistEndPoint endpoint.Endpoint
 	RegistEndPoint = MakeRegistEndPoint(s)
+	RegistEndPoint = kitzipkin.TraceEndpoint(tracer, "register-endpoint")(RegistEndPoint) //// 链路追踪
 
 	var LoginEndPoint endpoint.Endpoint
 	LoginEndPoint = MakeLoginEndPoint(s)
 	LoginEndPoint = LoggingMiddleware(log)(LoginEndPoint)              // 登陆中间价
 	LoginEndPoint = NewGolangRateAllowMiddleware(limit)(LoginEndPoint) //限流
+	LoginEndPoint = kitzipkin.TraceEndpoint(tracer, "login-endpoint")(LoginEndPoint) //// 链路追踪
 
 	var GetUserInfoByToken endpoint.Endpoint
 	GetUserInfoByToken = MakeTokenEndPoint(s)
+	GetUserInfoByToken = kitzipkin.TraceEndpoint(tracer, "getuserinfo-endpoint")(GetUserInfoByToken) //// 链路追踪
+
 	return Endpoints{RegistAccount: RegistEndPoint, LoginAccount: LoginEndPoint, GetUserInfoByToken: GetUserInfoByToken}
 }
 

@@ -5,6 +5,8 @@ import (
 	"flag"
 	"fmt"
 	"github.com/go-kit/kit/log"
+	"github.com/openzipkin/zipkin-go"
+	zipkinhttp "github.com/openzipkin/zipkin-go/reporter/http"
 	"golang.org/x/time/rate"
 	"google.golang.org/grpc"
 	dbconfig "mSystem/src/common/db"
@@ -30,6 +32,9 @@ func main() {
 		servicePort = flag.String("service.port", "9001", "service port")
 
 		grpcAddr    = flag.String("grpc", ":8001", "gRPC listen address.")
+
+		zipkinURL   = flag.String("zipkin.url", "http://127.0.0.1:9411/api/v2/spans", "Zipkin server url")
+
 	)
 	flag.Parse()
 	ctx := context.Background()
@@ -41,6 +46,28 @@ func main() {
 		logger = log.With(logger, "ts", log.DefaultTimestampUTC)
 		logger = log.With(logger, "caller", log.DefaultCaller)
 	}
+	var zipkinTracer *zipkin.Tracer
+	{
+		var (
+			err           error
+			hostPort      = *serviceHost + ":" + *servicePort
+			serviceName   = "user-service"
+			useNoopTracer = (*zipkinURL == "")
+			reporter      = zipkinhttp.NewReporter(*zipkinURL)
+		)
+		defer reporter.Close()
+		zEP, _ := zipkin.NewEndpoint(serviceName, hostPort)
+		zipkinTracer, err = zipkin.NewTracer(
+			reporter, zipkin.WithLocalEndpoint(zEP), zipkin.WithNoopTracer(useNoopTracer),
+		)
+		if err != nil {
+			logger.Log("err", err)
+			os.Exit(1)
+		}
+		if !useNoopTracer {
+			logger.Log("tracer", "Zipkin", "type", "Native", "URL", *zipkinURL)
+		}
+	}
 
 	// 接口定义
 	// 具体服务实现了
@@ -49,9 +76,10 @@ func main() {
 	utils.NewLoggerServer()
 	golangLimit := rate.NewLimiter(10, 1)
 
-	endpoint := edpts.NewEndpoint(svc,utils.GetLogger(),golangLimit)
+	endpoint := edpts.NewEndpoint(svc,utils.GetLogger(),golangLimit,zipkinTracer)
+
 	//创建http.Handler
-	r := transport.MakeHttpHandler(ctx, endpoint, logger)
+	r := transport.MakeHttpHandler(ctx, endpoint, logger,zipkinTracer)
 
 	//创建注册对象
 	registar := register.Register(*consulHost, *consulPort, *serviceHost, *servicePort, logger)

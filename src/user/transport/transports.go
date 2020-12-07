@@ -6,8 +6,10 @@ import (
 	"errors"
 	"fmt"
 	"github.com/go-kit/kit/log"
+	"github.com/go-kit/kit/tracing/zipkin"
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
+	gozipkin "github.com/openzipkin/zipkin-go"
 	uuid "github.com/satori/go.uuid"
 	"go.uber.org/zap"
 	"io/ioutil"
@@ -23,9 +25,10 @@ var (
 const ContextReqUUid = "req_uuid"
 
 // MakeHttpHandler make http handler use mux
-func MakeHttpHandler(ctx context.Context, endpoints endpoint.Endpoints, logger log.Logger) http.Handler {
+func MakeHttpHandler(ctx context.Context, endpoints endpoint.Endpoints, logger log.Logger, zipkinTracer *gozipkin.Tracer,) http.Handler {
 	r := mux.NewRouter()
-
+	// 链路追踪
+	zipkinServer := zipkin.HTTPServerTrace(zipkinTracer, zipkin.Name("http-transport"))
 	options := []kithttp.ServerOption{
 		kithttp.ServerErrorLogger(logger),
 		kithttp.ServerErrorEncoder(kithttp.DefaultErrorEncoder),
@@ -40,6 +43,7 @@ func MakeHttpHandler(ctx context.Context, endpoints endpoint.Endpoints, logger l
 			ctx = context.WithValue(ctx, ContextReqUUid, UUID)
 			return ctx
 		}),
+		zipkinServer,
 	}
 
      // 暴露具体的 endpoint
