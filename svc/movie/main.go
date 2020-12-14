@@ -11,10 +11,10 @@ import (
 	"google.golang.org/grpc"
 	dbconfig "mSystem/svc/common/db"
 	"mSystem/svc/common/pb"
-	register "mSystem/svc/file/compone"
-	edpts "mSystem/svc/file/endpoint"
-	"mSystem/svc/file/service"
-	transport "mSystem/svc/file/transport"
+	register "mSystem/svc/movie/compone"
+	edpts "mSystem/svc/movie/endpoint"
+	"mSystem/svc/movie/service"
+	transport "mSystem/svc/movie/transport"
 	"mSystem/svc/utils"
 	"net"
 	"net/http"
@@ -25,16 +25,15 @@ import (
 
 func main() {
 	var (
-		consulHost  = flag.String("consul.host", "127.0.0.1", "consul ip address")
-		consulPort  = flag.String("consul.port", "8500", "consul port")
+		consulHost = flag.String("consul.host", "127.0.0.1", "consul ip address")
+		consulPort = flag.String("consul.port", "8500", "consul port")
 
 		serviceHost = flag.String("service.host", "localhost", "service ip address")
 		servicePort = flag.String("service.port", "9002", "service port")
 
-		grpcAddr    = flag.String("grpc", ":8002", "gRPC listen address.")
+		grpcAddr = flag.String("grpc", ":8002", "gRPC listen address.")
 
-		zipkinURL   = flag.String("zipkin.url", "http://127.0.0.1:9411/api/v2/spans", "Zipkin server url")
-
+		zipkinURL = flag.String("zipkin.url", "http://127.0.0.1:9411/api/v2/spans", "Zipkin server url")
 	)
 	flag.Parse()
 	ctx := context.Background()
@@ -71,15 +70,15 @@ func main() {
 
 	// 接口定义
 	// 具体服务实现了
-	svc := service.NewFileService(utils.GetLogger())
+	svc := service.NewMovieService(utils.GetLogger())
 	//创建Endpoint
 	utils.NewLoggerServer()
 	golangLimit := rate.NewLimiter(10, 1)
-    // 创建endpoint
-	endpoint := edpts.NewEndpoint(svc,utils.GetLogger(),golangLimit,zipkinTracer)
+	// 创建endpoint
+	endpoint := edpts.NewEndpoint(svc, utils.GetLogger(), golangLimit, zipkinTracer)
 
 	//创建http.Handler
-	r := transport.MakeHttpHandler(ctx, endpoint, logger,zipkinTracer)
+	r := transport.MakeHttpHandler(ctx, endpoint, logger, zipkinTracer)
 
 	//创建注册对象
 	registar := register.Register(*consulHost, *consulPort, *serviceHost, *servicePort, logger)
@@ -116,5 +115,6 @@ func main() {
 	error := <-errChan
 	//服务退出取消注册
 	registar.Deregister()
+	dbconfig.Close() // 关闭数据库资源。。。。。。。
 	fmt.Println(error)
 }

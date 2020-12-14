@@ -13,8 +13,8 @@ import (
 	uuid "github.com/satori/go.uuid"
 	"go.uber.org/zap"
 	"io/ioutil"
-	"mSystem/svc/file/encode"
-	"mSystem/svc/file/endpoint"
+	"mSystem/svc/movie/encode"
+	"mSystem/svc/movie/endpoint"
 	"net/http"
 )
 

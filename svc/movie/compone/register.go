@@ -38,11 +38,11 @@ func Register(consulHost, consulPort, svcHost, svcPort string, logger log.Logger
 
 	//设置微服务想Consul的注册信息
 	reg := api.AgentServiceRegistration{
-		ID:      "file-service" + uuid.New(),
-		Name:    "file-service",
+		ID:      "movie-service" + uuid.New(),
+		Name:    "movie-service",
 		Address: svcHost,
 		Port:    port,
-		Tags:    []string{"file-service"},
+		Tags:    []string{"movie-service"},
 		Check:   &check,
 	}
 

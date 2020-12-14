@@ -20,7 +20,7 @@ type baseServer struct {
 	logger *zap.Logger
 }
 
-func NewFileService(log *zap.Logger) baseServer {
+func NewMovieService(log *zap.Logger) baseServer {
 	return baseServer{
 		logger: log,
 	}
