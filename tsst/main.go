@@ -2,8 +2,9 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/jinzhu/gorm"
+	"fmt"
 )
 
 
@@ -17,7 +18,13 @@ type User struct {
 }
 // 定义一个全局对象db
 var db *sql.DB
-
+// UserInfo 用户信息
+type UserInfo struct {
+	ID uint
+	Name string
+	Gender string
+	Hobby string
+}
 // 定义一个初始化数据库的函数
 func initDB() (err error) {
 	// DSN:Data Source Name
@@ -37,17 +44,21 @@ func initDB() (err error) {
 }
 func main()  {
 
-	err := initDB() // 调用输出化数据库的函数
-	if err != nil {
-		fmt.Printf("init db failed,err:%v\n", err)
-		return
+	db, err := gorm.Open("mysql", "root:123456@(127.0.0.1:3306)/dbnane?charset=utf8mb4&parseTime=True&loc=Local")
+	if err!= nil{
+		panic(err)
 	}
-	user := User{}
-	sqlStr := "SELECT * FROM user WHERE `email` = ?"
-	e := db.QueryRow(sqlStr,"342591255@qq.com").Scan(&user.UserId,&user.UserName,&user.Password,&user.CreateAt,&user.Email,&user.Phone)
-	if e != nil {
-		fmt.Printf("scan failed, err:%v\n", err)
-		return
-	}
-	fmt.Println(user)
+	defer db.Close()
+	// 自动迁移
+	//db.AutoMigrate(&UserInfo{})
+
+	//u1 := UserInfo{1, "七米", "男", "篮球"}
+	//u2 := UserInfo{2, "沙河娜扎", "女", "足球"}
+	//// 创建记录
+	//db.Create(&u1)
+	//db.Create(&u2)
+	// 查询
+	var u = new(UserInfo)
+	db.Where("id=?","1").Find(&u)
+	fmt.Printf("%#v\n", u)
 }
