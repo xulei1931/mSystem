@@ -1,94 +1,87 @@
 package db
 
 import (
-	"database/sql"
+	"encoding/json"
 	"fmt"
-	_ "github.com/go-sql-driver/mysql"
 	"mSystem/svc/common/entity"
 	"time"
-	"encoding/json"
 )
+
 // 通过ok
 func InsertUser(userName string, password string, email string) error {
 
 	today := time.Now().Format("2006-01-02")
+	u := new(entity.User)
+	u.Email=email
+	u.UserName=userName
+	u.Password=password
+	u.CreateAt=today
+	fmt.Println(u)
 
-	_, err := db.Exec("INSERT INTO `user`(`user_name`,`password`,`create_at`,`email`) VALUES(?,?,?,?)", userName, password, today, email)
-	return err
+	err := db.Create(&u)
+
+	if err.Error != nil {
+		return err.Error
+	}
+	return nil
 }
+
 // 通过ok
-func SelectUserByEmail(email string) (*entity.User, error) {
+func SelectUserByEmail(email string) bool {
 
 	user := entity.User{}
-	fmt.Print(db,email,"FFFFFFFFF")
-
-	sqlStr := "SELECT * FROM user WHERE `email` = ?"
-	e := db.QueryRow(sqlStr,email).Scan(&user.UserId,&user.UserName,&user.Password,&user.CreateAt,&user.Email,&user.Phone)
-	if e != nil {
-		fmt.Printf("scan failed, err:%v\n", e)
-		return nil, nil
+	er := db.Where("email=?", email).Find(&user)
+	if er.Error != nil{
+		return false
 	}
-	return &user, e
+	return true
 }
+
 //ok
 func SelectUserByPasswordName(email string, password string) (*entity.User, error) {
 
-	user := entity.User{}
-	sql := "SELECT * FROM user WHERE `email` = ? AND `password` = ? LIMIT 1"
-	e := db.QueryRow(sql,email,password).Scan(&user.UserId,&user.UserName,&user.Password,&user.CreateAt,&user.Email,&user.Phone)
-	if e != nil {
-		fmt.Printf("scan failed, err:%v\n", e)
-		return nil, nil
-	}
-	return &user, e
-}
-func SelectUserById(user_id float64,name string) (*entity.User, error) {
-	user := entity.User{}
-	user_key := fmt.Sprintf("user_id:",user_id)
+	user := new(entity.User)
+	er := db.Where("email=? and password=? ", email,password).Find(&user)
 
+	if er.Error !=nil{ // 差不到也走这里
+
+		return user, er.Error
+
+	}
+	return user, nil
+}
+func SelectUserById(user_id float64, name string) (*entity.User, error) {
+	user := entity.User{}
+	user_key := fmt.Sprintf("user_id:", user_id)
 	// redis
 	redis_values, err := redisClient.Get(user_key).Result()
 	if err == nil {
-       b := []byte(redis_values)
-       if json.Unmarshal(b,&user) == nil {
-		   fmt.Printf("get from redis value :%v\n", &user)
-          return &user,nil
-	   }
+		b := []byte(redis_values)
+		if json.Unmarshal(b, &user) == nil {
+			fmt.Printf("get from redis value :%v\n", &user)
+			return &user, nil
+		}
 	}
-
-	sql := "SELECT * FROM user WHERE `user_id` = ? AND `user_name` = ? LIMIT 1"
-	e := db.QueryRow(sql,int64(user_id),name).Scan(&user.UserId,&user.UserName,&user.Password,&user.CreateAt,&user.Email,&user.Phone)
-	if e != nil {
-		fmt.Printf("scan failed, err:%v\n", e)
-		return nil, nil
-	}
+	db.Where("user_id=? and user_name=? ", user_id,name).Find(&user)
 	bytes1, err := json.Marshal(&user)
 	if err == nil {
 		// 返回的是字节数组 []byte
-		redisClient.Set(user_key,string(bytes1),600) // 10分钟
+		redisClient.Set(user_key, string(bytes1), 600) // 10分钟
 	}
-	return &user, e
+	return &user, nil
 }
 func UpdateUserNameProfile(userName string, userId int64) error {
-	_, err := db.Exec("UPDATE `user` SET `user_name` = ? WHERE user_id = ?", userName, userId)
-	if err == sql.ErrNoRows {
-		return nil
-	}
-	return err
+
+	return nil
 }
+
 //
 func UpdateUserEmailProfile(email string, userId int64) error {
-	_, err := db.Exec("UPDATE `user` SET `email` = ? WHERE user_id = ?", email, userId)
-	if err == sql.ErrNoRows {
-		return nil
-	}
-	return err
+
+	return nil
 }
 
 func UpdateUserPhoneProfile(phone string, userId int64) error {
-	_, err := db.Exec("UPDATE `user` SET `phone` = ? WHERE user_id = ?", phone, userId)
-	if err == sql.ErrNoRows {
-		return nil
-	}
-	return err
+
+	return nil
 }

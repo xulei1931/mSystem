@@ -33,24 +33,19 @@ func (u baseServer) RegistAccount(ctx context.Context, req *pb.RegistAccountReq)
 	userName := req.UserName
 	password := utils.Md5Password(req.Password) // 密码md5加密
 	email := req.Email
-	user, err := db.SelectUserByEmail(email)
-	if err != nil {
-		u.logger.Error("error", zap.Error(err))
-		return &pb.RegistAccountRsp{
-			Code: -1,
-		}, errors.ErrorUserFailed
-	}
-	if user != nil {
+	has := db.SelectUserByEmail(email)
+
+	if has {
 		return &pb.RegistAccountRsp{
 			Code: -1,
 		}, errors.ErrorUserAlready
 	}
-	err = db.InsertUser(userName, password, email)
+
+	err := db.InsertUser(userName, password, email)
 	if err != nil {
-		u.logger.Error("error", zap.Error(err))
 		return &pb.RegistAccountRsp{
 			Code: -1,
-		}, errors.ErrorUserFailed
+		},errors.FormatError("user",err.Error())
 	}
 	return &pb.RegistAccountRsp{
 		Code: 0,
@@ -61,12 +56,14 @@ func (u baseServer) LoginAccount(ctx context.Context, req *pb.LoginAccountReq) (
 	email := req.Email
 	password :=  utils.Md5Password(req.Password)
 	user, err := db.SelectUserByPasswordName(email, password)
+
+	fmt.Println(user,err)
+
 	if err != nil {
-		u.logger.Error("error", zap.Error(err))
 		return &pb.LoginAccountRsp{
-		}, errors.ErrorUserFailed
+		}, errors.FormatError("user",err.Error())
 	}
-	if user == nil {
+	if user.Email =="" {
 		return &pb.LoginAccountRsp{}, errors.ErrorUserLoginFailed
 	}
 	// jwt 加密

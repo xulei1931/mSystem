@@ -2,8 +2,7 @@ package db
 
 func UpdateOrderScore(movieId int64,score int64) error {
 
-	_,err := db.Exec("UPDATE `order` SET `score` = ? WHERE `movie_id` = ?",score,movieId)
-	return err
+	return nil
 }
 //
 //func SelectOrderByUidMid(movieId int64,userId int64) (int64,error) {

@@ -15,6 +15,7 @@ require (
 	github.com/hashicorp/consul/api v1.3.0
 	github.com/hpcloud/tail v1.0.0
 	github.com/influxdata/influxdb v1.8.3
+	github.com/jinzhu/gorm v1.9.16
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/kujtimiihoxha/kit v0.1.1 // indirect
 	github.com/micro/go-micro v1.18.0
@@ -30,8 +31,8 @@ require (
 	go.etcd.io/etcd v0.0.0-20191023171146-3cf2f69b5738
 	go.mongodb.org/mongo-driver v1.4.4
 	go.uber.org/zap v1.16.0
-	golang.org/x/crypto v0.0.0-20191108234033-bd318be0434a
-	golang.org/x/net v0.0.0-20200202094626-16171245cfb2
+	golang.org/x/crypto v0.0.0-20191205180655-e7c4368fe9dd
+	golang.org/x/net v0.0.0-20200324143707-d3edc9973b7e
 	golang.org/x/time v0.0.0-20200630173020-3af7569d3a1e
 	golang.org/x/tools v0.0.0-20200108203644-89082a384178
 	google.golang.org/api v0.15.0
