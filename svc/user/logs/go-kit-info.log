@@ -103,3 +103,4 @@
 {"level":"info","ts":1607682693689,"caller":"logtool/log.go:89","msg":"[NewLogger] success"}
 {"level":"info","ts":1607682821361,"caller":"logtool/log.go:89","msg":"[NewLogger] success"}
 {"level":"info","ts":1607682866366,"caller":"logtool/log.go:89","msg":"[NewLogger] success"}
+{"level":"info","ts":1608106509683,"caller":"logtool/log.go:89","msg":"[NewLogger] success"}

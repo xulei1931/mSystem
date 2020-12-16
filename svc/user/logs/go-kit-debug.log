@@ -91,3 +91,4 @@
 {"level":"debug","ts":1607765018628,"caller":"endpoint/middleware.go:18","msg":"请求uid：82eef1f0-1fe9-5327-88c8-fe21ef8ff5bf","调用 LoggingMiddleware":"处理完请求","耗时毫秒":56}
 {"level":"debug","ts":1607765200144,"caller":"endpoint/middleware.go:18","msg":"请求uid：fb826e6e-5c73-5d2b-b4e9-8e167d8dfecd","调用 LoggingMiddleware":"处理完请求","耗时毫秒":0}
 {"level":"debug","ts":1607765312497,"caller":"endpoint/middleware.go:18","msg":"请求uid：46e4d659-757a-563d-97ea-d70c599ecc21","调用 LoggingMiddleware":"处理完请求","耗时毫秒":2}
+{"level":"debug","ts":1608106527715,"caller":"endpoint/middleware.go:18","msg":"请求uid：2d83a3f7-bb23-5b97-ae40-2a62f2853d5b","调用 LoggingMiddleware":"处理完请求","耗时毫秒":65}

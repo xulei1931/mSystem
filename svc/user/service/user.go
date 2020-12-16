@@ -7,7 +7,7 @@ import (
 	"mSystem/svc/common/db"
 	"mSystem/svc/common/errors"
 	"mSystem/svc/common/pb"
-	"mSystem/svc/utils"
+	"mSystem/svc/common/utils"
 )
 
 type UserService interface {
