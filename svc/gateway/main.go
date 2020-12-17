@@ -18,7 +18,6 @@ func main() {
 
 	// 创建环境变量
 	var (
-		//consulHost = flag.String("consul.host", "114.67.98.210", "consul server ip address")
 		consulHost = flag.String("consul.host", "127.0.0.1", "consul server ip address")
 		consulPort = flag.String("consul.port", "8500", "consul server port")
 	)

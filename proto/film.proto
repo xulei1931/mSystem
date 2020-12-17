@@ -217,4 +217,5 @@ service FilmServiceExt {
     rpc MovieDetail(MovieDetailReq) returns(MovieDetailRep) {}
     // 获取导演与演员信息
     rpc MovieCreditsWithTypes(MovieCreditsWithTypesReq) returns (MovieCreditsWithTypesRep) {}
+    	// 获取正在售票的影片
 }

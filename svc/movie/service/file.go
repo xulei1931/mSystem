@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"go.uber.org/zap"
+	"mSystem/svc/common/config"
 	"mSystem/svc/common/db"
 	"mSystem/svc/common/pb"
 )
@@ -25,11 +26,32 @@ func NewMovieService(log *zap.Logger) baseServer {
 		logger: log,
 	}
 }
+// 获取热播电影
 
 func (a baseServer) HotPlayMovies(ctx context.Context, req *pb.HotPlayMoviesReq) (*pb.HotPlayMoviesRep, error) {
 
+	files, error := db.SelectTickingFilims(config.TickingNow)
+	if error != nil {
+		fmt.Println(files, error, "444", error.Error())
+	}
+	movie := make([]*pb.Movie,len(files))
+	if len(files)>0{
+      for index,item := range files{
+		  filmActors := []string{"荒坡","范冰冰"}
+		  actors :=""
+		  for _, filmActor := range filmActors {
+			  actors = actors + filmActor + " "
+		  }
+
+		  movie[index]= &pb.Movie{
+			  Actors:actors,
+             TitleCn: item.TitleCn,
+		  }
+	  }
+	}
+	fmt.Println(files, error, "555", error)
 	return &pb.HotPlayMoviesRep{
-		Movies: nil,
+		Movies:movie ,
 	}, nil
 }
 

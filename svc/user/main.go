@@ -117,6 +117,5 @@ func main() {
 	//服务退出取消注册
 	registar.Deregister()
 	dbconfig.Close() // 关闭数据库资源
-
 	fmt.Println(error)
 }

@@ -24,7 +24,6 @@ func initDB() (err error) {
 		panic(err)
 	}
 	db.SingularTable(true)
-	//defer db.Close()
 	return nil
 }
 func initRedis() {
@@ -40,6 +39,6 @@ func initRedis() {
 	}
 	fmt.Println(pong, "redis 连接成功！！！")
 }
-func Close(){
+func Close() {
 	db.Close()
 }

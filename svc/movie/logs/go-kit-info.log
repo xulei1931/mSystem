@@ -28,3 +28,9 @@
 {"level":"info","ts":1607910482280,"caller":"logtool/log.go:89","msg":"[NewLogger] success"}
 {"level":"info","ts":1607911312521,"caller":"logtool/log.go:89","msg":"[NewLogger] success"}
 {"level":"info","ts":1608106584606,"caller":"logtool/log.go:89","msg":"[NewLogger] success"}
+{"level":"info","ts":1608193051563,"caller":"logtool/log.go:89","msg":"[NewLogger] success"}
+{"level":"info","ts":1608193093838,"caller":"logtool/log.go:89","msg":"[NewLogger] success"}
+{"level":"info","ts":1608193329460,"caller":"logtool/log.go:89","msg":"[NewLogger] success"}
+{"level":"info","ts":1608193392949,"caller":"logtool/log.go:89","msg":"[NewLogger] success"}
+{"level":"info","ts":1608193522023,"caller":"logtool/log.go:89","msg":"[NewLogger] success"}
+{"level":"info","ts":1608196809335,"caller":"logtool/log.go:89","msg":"[NewLogger] success"}

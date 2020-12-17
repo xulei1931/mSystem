@@ -4,6 +4,8 @@ go 1.15
 
 require (
 	firebase.google.com/go v3.13.0+incompatible
+	github.com/astaxie/beego v1.12.3
+	github.com/astaxie/goredis v0.0.0-20160824151742-1f1c6e6fc3a8
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-ini/ini v1.62.0
 	github.com/go-kit/kit v0.10.0
@@ -25,7 +27,7 @@ require (
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pborman/uuid v1.2.0
 	github.com/pkg/errors v0.9.1
-	github.com/prometheus/client_golang v1.3.0
+	github.com/prometheus/client_golang v1.7.0
 	github.com/robfig/cron v1.2.0
 	github.com/satori/go.uuid v1.2.0
 	go.etcd.io/etcd v0.0.0-20191023171146-3cf2f69b5738
