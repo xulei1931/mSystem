@@ -30,6 +30,7 @@ require (
 	github.com/prometheus/client_golang v1.7.0
 	github.com/robfig/cron v1.2.0
 	github.com/satori/go.uuid v1.2.0
+	github.com/sirupsen/logrus v1.4.2
 	go.etcd.io/etcd v0.0.0-20191023171146-3cf2f69b5738
 	go.mongodb.org/mongo-driver v1.4.4
 	go.uber.org/zap v1.16.0

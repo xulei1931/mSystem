@@ -1,12 +1,21 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/astaxie/beego/httplib"
 	"github.com/astaxie/goredis"
-	"fmt"
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/jinzhu/gorm"
+	"os"
+	"strconv"
+	"sync/atomic"
+	"time"
+
+	"github.com/sirupsen/logrus"
+	"path"
 	//"time"
 	"regexp"
-	"encoding/json"
 )
 
 const (
@@ -17,32 +26,32 @@ const (
 var (
 	client goredis.Client
 )
-func init(){
+var db *gorm.DB
+
+func init() {
 	// 连接redis
 	client.Addr = "127.0.0.1:6379"
+	//InitDB()
 }
-type MovieInfo struct {
-	Id                   int64
-	Movie_id             int
-	Movie_name           string
-	Movie_director       string
-	Movie_writer         string
-	Movie_conutry        string
-	Movie_language       string
-	Movie_type           string
-	Movie_image          string
-	Movie_main_charactor string
-	Movie_on_line        string
-	Movie_span           string
-	Movie_grade          string
-	remark               string
-	_create_time         string
-	Movie_name_as        string
+
+// 定义一个初始化数据库的函数
+func InitDB() error {
+	// DSN:Data Source Name
+	db, err := gorm.Open("mysql", "root:123456@(127.0.0.1:3306)/dbnane?charset=utf8mb4&parseTime=True&loc=Local")
+	if err != nil {
+		panic(err)
+	}
+	db.LogMode(true)
+	db.SetLogger(Logger())
+	fmt.Println(db.Error)
+	return nil
 }
+
 //添加到队列
 func PutQueue(url string) {
 	client.Lpush(URL_QUEUE, []byte(url))
 }
+
 // 取出队列数据
 func PopQueue() string {
 	res, err := client.Rpop(URL_QUEUE)
@@ -52,6 +61,7 @@ func PopQueue() string {
 	return string(res)
 
 }
+
 // 队列的长度
 func GetQueueLength() int {
 	length, err := client.Llen(URL_QUEUE)
@@ -60,6 +70,7 @@ func GetQueueLength() int {
 	}
 	return length
 }
+
 // 判断是否在集合中
 func IsHave(url string) bool {
 	has, err := client.Sismember(URL_SER, []byte(url))
@@ -73,7 +84,7 @@ func GetMovieUrl(movieHtml string) []string {
 	// https://movie.douban.com/subject
 	reg := regexp.MustCompile(`<a.*href="(https://movie.douban.com/subject/.*?)"`)
 	result := reg.FindAllStringSubmatch(string(movieHtml), -1)
-	fmt.Println(result,"result")
+	fmt.Println(result, "result")
 
 	if len(result) == 0 {
 		return movieurls
@@ -83,71 +94,143 @@ func GetMovieUrl(movieHtml string) []string {
 	}
 	return movieurls
 }
+
 type Subject struct {
+	Subjects []Movie `json:"subjects"`
+}
 
-	subjects []MovieObject
+type Movie struct {
+	TagId    int    `gorm:"column:tag_id"`
+	MovieId  string `json:"id" gorm:"column:movie_id"`
+	Title    string `json:"title" gorm:"column:title"`
+	Url      string `json:"url" gorm:"column:url"`
+	Rate     string `json:"rate" gorm:"column:rate"`
+	PlayAble int    `json:"playable" gorm:"column:play_able"`
+	IsNew    int    `json:"is_new" gorm:"column:is_new"`
+	Cover    string `json:"cover" gorm:"column:cover"`
+	CoverX   int64  `json:"cover_x" gorm:"column:cover_x"`
+	CoverY   int64  `json:"cover_y" gorm:"column:cover_y"`
 }
-type MovieObject struct {
-	rate float64  `json:"rate"`
-	cover_x int64 `json:"cover_x"`
-	title string `json:"title"`
-	url string `json:"url"`
-	playable bool `json:"playable"`
-	cover string `json:"cover"`
-	id int64 `json:"id"`
-	is_new bool `json:"is_new"`
-	
+
+func (Movie) TableName() string {
+	return "t_movies"
 }
-func main()  {
-	surl := `https://movie.douban.com/j/search_subjects?type=movie&tag=%E7%83%AD%E9%97%A8&sort=recommend&page_limit=20&page_start=0`
-	PutQueue(surl)
+
+func main() {
+	//c := cron.New()
+	//spec := "*/10 * * * * ?"
+	//c.AddFunc(spec, func() {
+	//	now := time.Now()
+	//	fmt.Println("cron running:", now.Minute(), now.Second())
+	//})
+	//c.Start()
+	//select {}
+	//
+	db, err := gorm.Open("mysql", "root:123456@(127.0.0.1:3306)/dbnane?charset=utf8mb4&parseTime=True&loc=Local")
+	if err!= nil{
+		panic(err)
+	}
+//	db.SingularTable(true)
+	db.LogMode(true)
+	db.SetLogger(Logger())
+	defer db.Close()
+
+	surl := "https://movie.douban.com/j/search_subjects?type=movie&tag=最新&sort=recommend&page_limit=20&page_start="
+	//PutQueue(surl)
+	var page int64=0
 	for {
-		length := GetQueueLength()
-		fmt.Println(length)
-		if length == 0 {
-			break
-		}
-		surl = PopQueue()
-		if IsHave(surl) {
-			continue
-		}
-		rsp := httplib.Get(surl)
-
+		url := surl + strconv.Itoa(int(page))
+		fmt.Println(url)
+		//os.Exit(0)
+		//length := GetQueueLength()
+		rsp := httplib.Get(url)
 
 		subject, err := rsp.String()
-		fmt.Println(subject)
+
 		if err != nil {
 			continue
 		}
-
+		fmt.Println(subject)
 		bytes2 := []byte(subject)
 		var files Subject
-		if json.Unmarshal(bytes2, &files) == nil {
-			//fmt.Println("json.Unmarshal 解码结果: ", person2.Name, person2.Age)
+		err = json.Unmarshal(bytes2, &files)
+		if err != nil {
+			fmt.Println("json unmarshal error:",err)
 		}
-
 		fmt.Println(files)
-		// 获取url
-		//var movieInfo MovieInfo
-		//movieInfo.Movie_name = GetMovieName(html)
-		//if movieInfo.Movie_name != "" {
-		//	// 爬取电影
-		//	movieInfo.Id = 0
-		//	movieInfo.Movie_id = MovieId(surl)
-		//	movieInfo.Movie_name = GetMovieName(html)
-		//	movieInfo.Movie_director = GetMovieDirectory(html)
-		//	movieInfo.Movie_writer = GetMovieWrite(html)
-		//	movieInfo.Movie_conutry = GetMovieCountry(html)
-		//	movieInfo.Movie_language = GetMovieLanguage(html)
-		//	movieInfo.Movie_type = GetMovieType(html)
-		//	movieInfo.Movie_image = GetMoviePic(html)
-		//	movieInfo.Movie_main_charactor = GetMovieMainActor(html)
-		//	movieInfo.Movie_on_line = GetMovieOnLineTime(html)
-		//	movieInfo.Movie_span = GetMovieSpan(html)
-		//	movieInfo.Movie_grade = GetMovieScores(html)
-		//	movieInfo.Movie_name_as = GetMovieNameAs(html)
-		//	fmt.Println(movieInfo)
-		//	time.Sleep(time.Second)
-		//}
+		//  没数据自动退出
+		if len(files.Subjects) ==0 {
+			break
+		}
+		//fmt.Println(files)
+		var u = new(Movie)
+		for _, file := range files.Subjects {
+
+		 er := db.Where("movie=?",file.MovieId).Find(&u)
+			if er.Error == nil {
+				// 存在了
+             continue
+			}
+
+			MovieObject := Movie {
+				TagId: 2,
+				MovieId:  file.MovieId,
+				Title:    file.Title,
+				Url:      file.Title,
+				Cover:    file.Cover,
+				Rate:     file.Rate,
+				PlayAble: file.PlayAble,
+				IsNew:    file.IsNew,
+				CoverX:   file.CoverX,
+				CoverY:   file.CoverY,
+			}
+			//fmt.Println(&MovieObject)
+			db.LogMode(true)
+			db.Create(&MovieObject)
+			//fmt.Println(err.Error)
+			//fmt.Println()
+		}
+		atomic.AddInt64(&page, 20)
+		time.Sleep(time.Second*1)
 	}
+	//defer db.Close()
+
+}
+func Logger() *logrus.Logger {
+	now := time.Now()
+	logFilePath := ""
+	if dir, err := os.Getwd(); err == nil {
+		logFilePath = dir + "/logs/"
+	}
+	if err := os.MkdirAll(logFilePath, 0777); err != nil {
+		fmt.Println(err.Error())
+	}
+	logFileName := now.Format("2006-01-02") + ".log"
+	//日志文件
+	fileName := path.Join(logFilePath, logFileName)
+	if _, err := os.Stat(fileName); err != nil {
+		if _, err := os.Create(fileName); err != nil {
+			fmt.Println(err.Error())
+		}
+	}
+	//写入文件
+	src, err := os.OpenFile(fileName, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
+	if err != nil {
+		fmt.Println("err", err)
+	}
+
+	//实例化
+	logger := logrus.New()
+
+	//设置输出
+	logger.Out = src
+
+	//设置日志级别
+	logger.SetLevel(logrus.DebugLevel)
+
+	//设置日志格式
+	logger.SetFormatter(&logrus.TextFormatter{
+		TimestampFormat: "2006-01-02 15:04:05",
+	})
+	return logger
 }

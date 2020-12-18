@@ -11,11 +11,12 @@ import (
 	"google.golang.org/grpc"
 	dbconfig "mSystem/svc/common/db"
 	"mSystem/svc/common/pb"
+	"mSystem/svc/common/utils"
 	register "mSystem/svc/movie/compone"
+	"mSystem/svc/movie/cron"
 	edpts "mSystem/svc/movie/endpoint"
 	"mSystem/svc/movie/service"
 	transport "mSystem/svc/movie/transport"
-	"mSystem/svc/common/utils"
 	"net"
 	"net/http"
 	"os"
@@ -38,7 +39,6 @@ func main() {
 	flag.Parse()
 	ctx := context.Background()
 	errChan := make(chan error)
-
 	var logger log.Logger
 	{
 		logger = log.NewLogfmtLogger(os.Stderr)
@@ -93,6 +93,8 @@ func main() {
 	}()
 	// 数据库连接初始化。。。。。。
 	dbconfig.Init()
+	// 更新电影
+	go cron.SyncMocie(dbconfig.GetInstance())
 	//grpc server
 	go func() {
 		fmt.Println("grpc Server start at port" + *grpcAddr)

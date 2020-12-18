@@ -13,4 +13,7 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
-svc/user/logs/
+/logs/
+svc/user/logs/*.log
+svc/movie/logs/*.log
+svc/movie/test/
