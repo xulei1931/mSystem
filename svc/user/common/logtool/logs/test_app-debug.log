@@ -1,0 +1,10 @@
+{"level":"debug","ts":1606117520331,"caller":"logtool/log_test.go:14","msg":"debug log 1","line":47}
+{"level":"debug","ts":1606117521331,"caller":"logtool/log_test.go:14","msg":"debug log 1","line":47}
+{"level":"debug","ts":1606117522334,"caller":"logtool/log_test.go:14","msg":"debug log 1","line":47}
+{"level":"debug","ts":1606117523335,"caller":"logtool/log_test.go:14","msg":"debug log 1","line":47}
+{"level":"debug","ts":1606117524335,"caller":"logtool/log_test.go:14","msg":"debug log 1","line":47}
+{"level":"debug","ts":1606117525336,"caller":"logtool/log_test.go:14","msg":"debug log 1","line":47}
+{"level":"debug","ts":1606117526336,"caller":"logtool/log_test.go:14","msg":"debug log 1","line":47}
+{"level":"debug","ts":1606117527338,"caller":"logtool/log_test.go:14","msg":"debug log 1","line":47}
+{"level":"debug","ts":1606117528339,"caller":"logtool/log_test.go:14","msg":"debug log 1","line":47}
+{"level":"debug","ts":1606117529340,"caller":"logtool/log_test.go:14","msg":"debug log 1","line":47}

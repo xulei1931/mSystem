@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-python
+spec:
+  ports:
+    - port: 3000
+      protocol: TCP
+      targetPort: 443
+  selector:
+    run: pod-python
+  type: ClusterIP

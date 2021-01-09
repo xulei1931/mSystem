@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway-service
+  labels:
+    name: gateway-service
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+  selector:
+      matchLabels:
+        name: gateway-service
+  template:
+    metadata:
+      name: gateway-service
+      labels:
+        name: gateway-service
+    spec:
+      containers:                    #定义User容器，开放9099端口
+        - name: gateway
+          image: gateway
+          ports:
+            - containerPort: 9099
+          imagePullPolicy: IfNotPresent
+
+

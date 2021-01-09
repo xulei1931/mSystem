@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: gateway-service
+  labels:
+    name: gateway-service
+spec:
+  containers:                    #定义User容器，开放10086端口
+    - name: gateway
+      image: gateway
+      ports:
+        - containerPort: 9099
+      imagePullPolicy: IfNotPresent
+
+
+
+

@@ -1,0 +1,27 @@
+apiVersion: v1
+
+kind: Service
+
+metadata:
+
+  name: users-http
+
+spec:
+
+  selector:
+
+    name: user-service
+
+  type: NodePort
+
+  ports:
+
+    - protocol: TCP
+
+      port: 8078
+
+      targetPort: 8078
+
+      nodePort: 31002
+
+      name: users-tcp

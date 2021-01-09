@@ -1,0 +1,42 @@
+syntax = "proto3";
+package pb;
+service UserServiceExt {
+   // 注册用户
+   rpc RegistAccount(RegistAccountReq) returns(RegistAccountRsp) {}
+   // 用户登录
+   rpc LoginAccount(LoginAccountReq) returns(LoginAccountRsp) {}
+   // 通过token 获取用户信息
+    rpc GetUserInfoByToken(GetUserInfoByTokenRequest) returns(GetUserInfoByTokenResponse) {}
+}
+message RegistAccountReq {
+    string email = 1 ;
+    string userName = 2 ;
+    string password = 3 ;
+}
+message RegistAccountRsp {
+    int64 code = 1;
+}
+message LoginAccountReq {
+    string email = 1 ;
+    string password = 2 ;
+}
+
+message UserInfo {
+    int64 user_id=1;
+    string userName=2;
+    string email=3;
+    string phone=4;
+}
+message LoginAccountRsp {
+    int64 code = 1;
+    string token = 2;
+    string uid = 3;
+}
+message GetUserInfoByTokenRequest {
+    string token=1;
+}
+
+message GetUserInfoByTokenResponse {
+    int64 code=1;
+    UserInfo userInfo=3;
+}
